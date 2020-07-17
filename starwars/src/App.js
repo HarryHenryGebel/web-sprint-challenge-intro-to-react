@@ -1,19 +1,43 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
+import {requester} from 'easier-requests';
 import './App.css';
+import Character from './Character';
+import {extractData} from './helpers';
 
-const App = () => {
-  // Try to think through what state you'll need for this app before starting. Then build out
-  // the state properties here.
 
-  // Fetch characters from the API in an effect hook. Remember, anytime you have a 
-  // side effect in a component, you want to think about which state and/or props it should
-  // sync up with, if any.
+function getCharacters(setCharacters) {
+  // holds each new copy of character array
+  let characters = [];
+
+  async function _getCharacters(setCharacters,
+                                page='http://swapi.dev/api/people/') {
+    const id = requester.createUniqueID();
+    await requester.get(page, id);
+
+    const response = requester.response(id).data;
+    console.log(response);
+
+    const extractedResults = response.results.map(extractData);
+    characters = [...characters].concat(extractedResults);
+    setCharacters(characters);
+    console.log(characters);
+
+    if (response.next)
+      _getCharacters(setCharacters, response.next);
+  }
+
+  _getCharacters(setCharacters);
+}
+
+export default function App () {
+  const [characters, setCharacters] = useState([]);
+
+  useEffect(() => getCharacters(setCharacters), []);
 
   return (
     <div className="App">
       <h1 className="Header">Characters</h1>
+      {characters.map((character) => <Character character={character}/>)}
     </div>
   );
 }
-
-export default App;
