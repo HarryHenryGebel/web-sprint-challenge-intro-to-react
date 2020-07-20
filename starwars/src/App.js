@@ -30,6 +30,7 @@ function getCharacters(setCharacters) {
 }
 
 export default function App () {
+  window.requester = requester;
   const [characters, setCharacters] = useState([]);
 
   useEffect(() => getCharacters(setCharacters), []);
