@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {requester} from 'easier-requests';
+import requester from 'easier-requests';
 import './App.css';
 import Character from './Character';
 import {extractData} from './helpers';
-
 
 function getCharacters(setCharacters) {
   // holds each new copy of character array
@@ -15,12 +14,10 @@ function getCharacters(setCharacters) {
     await requester.get(page, id);
 
     const response = requester.response(id).data;
-    console.log(response);
 
     const extractedResults = response.results.map(extractData);
     characters = [...characters].concat(extractedResults);
     setCharacters(characters);
-    console.log(characters);
 
     if (response.next)
       _getCharacters(setCharacters, response.next);
